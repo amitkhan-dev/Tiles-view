@@ -12,7 +12,7 @@ import {
   DropdownMenu,
   DropdownItem,
   Avatar,} from "@heroui/react";
-import { Sparkles, LogOut, User as UserIcon, LayoutGrid, Menu, X } from "lucide-react";
+import {LogOut, User as UserIcon, LayoutGrid, Menu, X } from "lucide-react";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -83,7 +83,7 @@ export default function Navbar() {
                   color="primary"
                   name={session.user?.name || "User"}
                   size="md"
-                  src={session.user?.image || "https://i.pravatar.cc/150"}
+                  src={session.user?.image || `https://api.dicebear.com/7.x/initials/svg?seed=${session.user?.name || "User"}`}
                 />
               </DropdownTrigger>
               <DropdownMenu aria-label="Profile Actions" variant="flat">

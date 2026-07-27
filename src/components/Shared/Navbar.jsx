@@ -27,7 +27,7 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="sticky container mx-auto top-0 z-50 bg-background/80 backdrop-blur-md border-b border-default-100">
+    <nav className="sticky  mx-auto top-0 z-50 bg-background/80 backdrop-blur-md border-b border-default-100">
       <div className=" px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         
         {/* Left side Mobile Menu, Button & Logo */}

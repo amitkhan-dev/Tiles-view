@@ -4,19 +4,23 @@ import Link from "next/link";
 import Image from "next/image";
 import logo from "@/assets/logo.png";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react"; // 👈 1. useEffect ইম্পোর্ট করা হলো
+import { useCart } from "@/context/CartContext";
 import {
   Button,
   Dropdown,
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
-  Avatar,} from "@heroui/react";
-import {LogOut, User as UserIcon, LayoutGrid, Menu, X } from "lucide-react";
+  Avatar,
+} from "@heroui/react";
+import { LogOut, User as UserIcon, LayoutGrid, Menu, X, ShoppingBag } from "lucide-react";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false); // 👈 2. mounted স্টেট ডিক্লেয়ার করা হলো
   const pathname = usePathname();
+  const { totalItems } = useCart();
 
   const session = null;
 
@@ -26,20 +30,25 @@ export default function Navbar() {
     { name: "My Profile", href: "/my-profile" },
   ];
 
+  // 💡 Hydration & Real-time Update নিশ্চিত করার জন্য
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
-    <nav className="sticky  mx-auto top-0 z-50 bg-background/80 backdrop-blur-md border-b border-default-100">
-      <div className=" px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+    <nav className="sticky mx-auto top-0 z-50 bg-background/80 backdrop-blur-md border-b border-default-100">
+      <div className="px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         
         {/* Left side Mobile Menu, Button & Logo */}
         <div className="flex items-center gap-3">
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             className="sm:hidden p-2 rounded-xl hover:bg-default-100 text-default-600 transition-colors"
-            aria-label="Toggle Menu">
+            aria-label="Toggle Menu"
+          >
             {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
 
-          
           <Link href="/" className="flex items-center gap-3 group">
             <div className="relative w-22 h-22 flex items-center justify-center transition-transform group-hover:scale-105">
               <Image
@@ -48,15 +57,16 @@ export default function Navbar() {
                 width={100}
                 height={100}
                 className="object-contain w-full h-full"
-                priority/>
+                priority
+              />
             </div>
-              <span className="font-extrabold text-2xl tracking-tight bg-linear-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
-                Tile & Crown
-              </span>
-            </Link>
-          </div>
+            <span className="font-extrabold text-2xl tracking-tight bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
+              Tile & Crown
+            </span>
+          </Link>
+        </div>
 
-        {/* { Center- Home, All Tiles, My Profile } */}
+        {/* Center - Navigation Links */}
         <div className="hidden sm:flex items-center gap-6">
           {menuItems.map((item) => {
             const isActive = pathname === item.href;
@@ -64,15 +74,34 @@ export default function Navbar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`text-xl font-medium transition-colors ${isActive ? "text-primary font-semibold" : "text-default-600 hover:text-primary"
-                }`}>{item.name}
+                className={`text-xl font-medium transition-colors ${
+                  isActive ? "text-primary font-semibold" : "text-default-600 hover:text-primary"
+                }`}
+              >
+                {item.name}
               </Link>
             );
           })}
         </div>
 
-        {/* Right side */}
+        {/* Right side - Profile, Cart & Login */}
         <div className="flex items-center gap-3">
+          {/* 🛒 Shopping Cart Icon */}
+          <Link
+            href="/cart"
+            aria-label="View Shopping Cart"
+            className="p-2 text-default-700 hover:text-primary transition-colors relative"
+          >
+            <ShoppingBag className="w-6 h-6" />
+            
+            {/* 👈 3. mounted এবং totalItems চেক করে ব্যাজ রেন্ডার করা হলো */}
+            {mounted && totalItems > 0 && (
+              <span className="absolute -top-1 -right-1 bg-primary text-white text-[11px] w-5 h-5 rounded-full flex items-center justify-center font-bold shadow-md transition-all scale-100">
+                {totalItems}
+              </span>
+            )}
+          </Link>
+
           {session ? (
             <Dropdown placement="bottom-end">
               <DropdownTrigger>
@@ -115,7 +144,7 @@ export default function Navbar() {
                 aria-label="My Profile"
                 className="text-default-600 hover:text-primary"
               >
-                <UserIcon className="w-8 h-8" />
+                <UserIcon className="w-6 h-6" />
               </Button>
 
               {/* Login Button */}
@@ -126,7 +155,8 @@ export default function Navbar() {
                 radius="full"
                 variant="shadow"
                 size="md"
-                className="text-xl font-semibold px-6">
+                className="text-xl font-semibold px-6"
+              >
                 Login
               </Button>
             </div>

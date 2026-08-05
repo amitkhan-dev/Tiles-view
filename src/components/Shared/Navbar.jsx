@@ -19,10 +19,10 @@ import { LogOut, User as UserIcon, LayoutGrid, Menu, X, ShoppingBag } from "luci
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
-  const {cart, totalItems, isMounted } = useCart();
-console.log("Navbar Cart:", cart);
-console.log("Navbar Total:", totalItems);
-console.log("Mounted:", isMounted);
+  const { cart, totalItems, isMounted } = useCart();
+  console.log("Navbar Cart:", cart);
+  console.log("Navbar Total:", totalItems);
+  console.log("Mounted:", isMounted);
 
   const session = null;
 
@@ -33,21 +33,21 @@ console.log("Mounted:", isMounted);
   ];
 
   return (
-    <nav className="sticky mx-auto top-0 z-50 bg-background/80 backdrop-blur-md border-b border-default-100">
-      <div className="px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+    <nav className="sticky container mx-auto top-0 z-50 bg-white/90 backdrop-blur-md border rounded-xl border-slate-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         
-        {/* Left side Mobile Menu, Button & Logo */}
+        {/* Left side Mobile Menu & Logo */}
         <div className="flex items-center gap-3">
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="sm:hidden p-2 rounded-xl hover:bg-default-100 text-default-600 transition-colors"
+            className="sm:hidden p-2 rounded-xl hover:bg-slate-100 text-slate-700 transition-colors"
             aria-label="Toggle Menu"
           >
             {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
 
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="relative w-12 h-12 flex items-center justify-center transition-transform group-hover:scale-105">
+            <div className="relative w-10 h-10 flex items-center justify-center transition-transform group-hover:scale-105">
               <Image
                 src={logo}
                 alt="Tile & Crown Logo"
@@ -57,22 +57,25 @@ console.log("Mounted:", isMounted);
                 priority
               />
             </div>
-            <span className="font-extrabold text-2xl tracking-tight bg-gradient-to-r from-primary via-secondary to-primary bg-clip-text text-transparent">
-              Tile & Crown
-            </span>
+            <div className="font-extrabold text-2xl tracking-tight text-[#096428]">
+              
+              <span className="text-[#482d08]">Clay</span>  & <span className="text-[#b3a505]">Crown</span>
+            </div>
           </Link>
         </div>
 
-        {/* Center - Navigation Links */}
-        <div className="hidden sm:flex items-center gap-6">
+        {/* Center - Pill Styled Navigation Links */}
+        <div className="hidden sm:flex items-center gap-3">
           {menuItems.map((item) => {
             const isActive = pathname === item.href;
             return (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`text-lg font-medium transition-colors ${
-                  isActive ? "text-primary font-semibold" : "text-default-600 hover:text-primary"
+                className={`px-6 py-2 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                  isActive
+                    ? "bg-[#0a8f1c] text-white shadow-sm"
+                    : "border border-slate-300/80 bg-white text-[#0a8f1c] hover:bg-slate-50 hover:border-[#0a8f1c]"
                 }`}
               >
                 {item.name}
@@ -82,17 +85,17 @@ console.log("Mounted:", isMounted);
         </div>
 
         {/* Right side - Profile, Cart & Login */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           {/* Shopping Cart Icon */}
-          <Link href="/cart"
+          <Link
+            href="/cart"
             aria-label="View Shopping Cart"
-            className="relative inline-flex items-center justify-center w-10 h-10 text-default-700 hover:text-primary"
->         
+            className="relative inline-flex items-center justify-center w-10 h-10 text-slate-700 hover:text-[#0a8f1c] transition-colors"
+          >
             <ShoppingBag className="w-6 h-6" />
 
             {totalItems > 0 && (
-              <span
-                className="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center z-50">
+              <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center z-50">
                 {totalItems}
               </span>
             )}
@@ -108,13 +111,16 @@ console.log("Mounted:", isMounted);
                   color="primary"
                   name={session.user?.name || "User"}
                   size="md"
-                  src={session.user?.image || `https://api.dicebear.com/7.x/initials/svg?seed=${session.user?.name || "User"}`}
+                  src={
+                    session.user?.image ||
+                    `https://api.dicebear.com/7.x/initials/svg?seed=${session.user?.name || "User"}`
+                  }
                 />
               </DropdownTrigger>
               <DropdownMenu aria-label="Profile Actions" variant="flat">
                 <DropdownItem key="profile_header" className="h-14 gap-2">
                   <p className="font-semibold">Logged in as</p>
-                  <p className="font-semibold text-primary">{session.user?.email}</p>
+                  <p className="font-semibold text-[#0a8f1c]">{session.user?.email}</p>
                 </DropdownItem>
                 <DropdownItem key="my_profile" startContent={<UserIcon className="w-4 h-4" />}>
                   <Link href="/my-profile" className="w-full block">My Profile</Link>
@@ -128,33 +134,30 @@ console.log("Mounted:", isMounted);
               </DropdownMenu>
             </Dropdown>
           ) : (
-            <div className="flex items-center gap-2">
-              <Button
-                as={Link}
-                href="/my-profile"
-                isIconOnly
-                variant="flat"
-                color="default"
-                radius="full"
-                size="md"
-                aria-label="My Profile"
-                className="text-default-600 hover:text-primary"
-              >
-                <UserIcon className="w-6 h-6" />
-              </Button>
+            <div className="flex items-center gap-3">
+              <Link href="/my-profile">
+                <Button
+                  isIconOnly
+                  variant="flat"
+                  color="default"
+                  radius="lg"
+                  size="md"
+                  className="text-slate-600 hover:text-[#006680]"
+                >
+                  <UserIcon className="w-5 h-5" />
+                </Button>
+            </Link>
 
-              {/* Login Button */}
-              <Button
-                as={Link}
-                href="/login"
-                color="primary"
-                radius="full"
-                variant="shadow"
-                size="md"
-                className="text-base font-semibold px-6"
-              >
-                Login
-              </Button>
+              {/* Login Button*/}
+              <Link href="/login">
+                <Button
+                  radius="lg"
+                  size="md"
+                  className="bg-[#0a8f1c] hover:bg-[#148523] text-white font-semibold text-sm px-6 rounded-xl shadow-sm"
+                >
+                  Login
+                </Button>
+              </Link>
             </div>
           )}
         </div>
@@ -162,14 +165,16 @@ console.log("Mounted:", isMounted);
 
       {/* Mobile Menu Drawer */}
       {isMenuOpen && (
-        <div className="sm:hidden border-t border-default-100 bg-background/95 backdrop-blur-md px-4 py-4 space-y-3">
+        <div className="sm:hidden border-t border-slate-200 bg-white px-4 py-4 space-y-2">
           {menuItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}
               onClick={() => setIsMenuOpen(false)}
-              className={`block text-base font-medium ${
-                pathname === item.href ? "text-primary font-bold" : "text-default-700"
+              className={`block px-4 py-2.5 rounded-xl text-sm font-medium ${
+                pathname === item.href
+                  ? "bg-[#0a8f1c] text-white font-bold"
+                  : "text-slate-700 hover:bg-slate-100"
               }`}
             >
               {item.name}

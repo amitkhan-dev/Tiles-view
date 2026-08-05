@@ -199,9 +199,9 @@ export default function AllTilesPage() {
                           size="sm"
                           radius="full"
                           endContent={<Eye className="w-4 h-4" />}
-                          className="bg-neutral-100 text-neutral-700 hover:bg-neutral-200 font-semibold px-3 cursor-pointer"
+                          className="bg-yellow-600 text-white hover:bg-green-800 font-semibold px-3 cursor-pointer"
                         >
-                          View
+                          Details view
                         </Button>
                       </Link>
                     </div>

@@ -19,7 +19,7 @@ export default function Footer() {
           <div className="lg:col-span-2 space-y-4">
             <Link href="/" className="inline-block">
               <span className="text-2xl font-bold tracking-tight text-white">
-                Tiles<span className="text-cyan-400">Nest</span>
+                Clay <span className="text-green-300">&</span> <span className="text-cyan-400">Crown</span>
               </span>
             </Link>
             <p className="text-sm text-neutral-400 leading-relaxed max-w-sm">

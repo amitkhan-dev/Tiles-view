@@ -20,11 +20,19 @@ export default function CartPage() {
         <p className="text-neutral-500 max-w-md text-sm">
           Looks like you haven't added any tiles to your cart yet. Explore our catalog and add your favorites!
         </p>
-        <Link href="/all-tiles">
+        <div className="flex gap-3 ">
+          <Link href="/all-tiles">
           <Button color="primary" radius="full" size="lg" className="font-semibold px-8 mt-2">
             Browse All Tiles
           </Button>
         </Link>
+        <Link href="/">
+          <Button color="primary" radius="full" size="lg" className="font-semibold px-8 mt-2">
+            Go to Home
+          </Button>
+        </Link>
+        </div>
+        
       </div>
     );
   }
@@ -153,9 +161,9 @@ export default function CartPage() {
 
           <Link
             href="/all-tiles"
-            className="flex items-center justify-center gap-2 text-xs font-bold text-neutral-500 hover:text-neutral-800 transition-colors pt-2"
+            className="flex items-center justify-center gap-2 text-[15px] font-bold text-neutral-500 hover:text-[#0a8f1c] transition-colors p-2 border border-[#0a8f1c] text-center rounded-2xl"
           >
-            <ArrowLeft className="w-4 h-4" /> Continue Shopping
+            <ArrowLeft className="w-4 h-4 " /> Continue Shopping
           </Link>
         </div>
       </div>

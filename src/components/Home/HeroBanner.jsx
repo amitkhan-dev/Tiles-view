@@ -7,14 +7,14 @@ import { ArrowRight, Clock, ShieldCheck, Sparkles, Truck } from 'lucide-react';
 const HeroBanner = () => {
   return (
     <section className="relative container mx-auto overflow-hidden my-4 border bg-background shadow-sm">
-      <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-linear-to-tr from-green-800/20 to-primary/20 blur-[120px] rounded-full  z-10 pointer-events-none" />
+      <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-150 h-[300px] bg-linear-to-tr from-green-800/20 to-primary/20 blur-[120px] rounded-full  z-10 pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           <div className="flex flex-col gap-8 lg:gap-12">
           
           {/* banner image */}
-            <div className="order-1 w-full relative rounded-2xl overflow-hidden shadow-2xl border border-default-200/80 group h-[380px] sm:h-[480px] lg:h-[550px] flex items-center justify-center text-center">
-            {/* 1. Background Image (z-index সরানো হয়েছে) */}
+            <div className="order-1 w-full relative rounded-2xl overflow-hidden shadow-2xl border border-default-200/80 group h-95 sm:h-120 lg:h-137 flex items-center justify-center text-center">
+            
               <Image
                 src="https://images.unsplash.com/photo-1615873968403-89e068629265?q=80&w=1600&auto=format&fit=crop"
                 alt="Modern Luxury Tiles Showcase"

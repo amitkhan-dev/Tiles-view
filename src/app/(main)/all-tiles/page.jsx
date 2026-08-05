@@ -17,14 +17,16 @@ const categories = [
   { label: "Marble Finish", value: "marble-finish-tiles" },
 ];
 
+
 export default function AllTilesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [onlyInStock, setOnlyInStock] = useState(false);
   const [addedId, setAddedId] = useState(null); // ⚡ Click feedback state
   const { addToCart } = useCart();
+  
 
-  // ⚡ Interactive Button Handler
+  //  Interactive Button Handler
   const handleAddToCart = (tile) => {
     addToCart(tile, 1);
     setAddedId(tile.id);

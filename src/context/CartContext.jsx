@@ -1,15 +1,17 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import toast from "react-hot-toast";
 
 const CartContext = createContext(null);
 
 export const CartProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
-  // 1. Initial Load: Read from LocalStorage
+  // ১. Mount হওয়ার পর localStorage থেকে ডাটা রিড করা
   useEffect(() => {
+    setIsMounted(true);
     try {
       const savedCart = localStorage.getItem("tiles_cart");
       if (savedCart) {
@@ -17,44 +19,56 @@ export const CartProvider = ({ children }) => {
       }
     } catch (error) {
       console.error("Failed to load cart from localStorage:", error);
-    } finally {
-      setIsLoaded(true);
     }
   }, []);
 
-  // 2. Save Changes: Update LocalStorage on cart change
+  // ২. কার্ট চেঞ্জ হলে localStorage এ সিঙ্ক করা
   useEffect(() => {
-    if (isLoaded) {
-      localStorage.setItem("tiles_cart", JSON.stringify(cart));
+    if (isMounted) {
+      try {
+        localStorage.setItem("tiles_cart", JSON.stringify(cart));
+      } catch (error) {
+        console.error("Failed to save cart to localStorage:", error);
+      }
     }
-  }, [cart, isLoaded]);
+  }, [cart, isMounted]);
 
-  // 🛒 Add to Cart Function
+  // 🛒 Add to Cart
   const addToCart = (product, quantity = 1) => {
+    const productName = product.title || product.name || "Item";
+
     setCart((prevCart) => {
-      // 🛠️ Fix 3: String conversion to handle both string and numeric IDs
       const existingIndex = prevCart.findIndex(
         (item) => String(item.id) === String(product.id)
       );
 
       if (existingIndex > -1) {
-        const updatedCart = [...prevCart];
-        updatedCart[existingIndex].quantity += quantity;
-        return updatedCart;
+        const updated = [...prevCart];
+        updated[existingIndex] = {
+          ...updated[existingIndex],
+          quantity: updated[existingIndex].quantity + quantity,
+        };
+        return updated;
       } else {
         return [...prevCart, { ...product, quantity }];
       }
     });
+
+    toast.success(`${productName} added to cart! 🛍️`);
   };
 
-  // 🗑️ Remove Item
+  // 🗑️ Remove Item (Fixed Async Bug)
   const removeFromCart = (id) => {
-    setCart((prevCart) =>
-      prevCart.filter((item) => String(item.id) !== String(id))
-    );
+    // setCart এর বাইরে আগে প্রোডাক্টটি খুঁজে বের করা
+    const target = cart.find((item) => String(item.id) === String(id));
+    const removedTitle = target?.title || target?.name || "Item";
+
+    setCart((prevCart) => prevCart.filter((item) => String(item.id) !== String(id)));
+
+    toast.error(`${removedTitle} removed from cart`);
   };
 
-  // 🔢 Update Quantity Directly
+  // 🔢 Update Quantity
   const updateQuantity = (id, quantity) => {
     if (quantity <= 0) {
       removeFromCart(id);
@@ -70,26 +84,37 @@ export const CartProvider = ({ children }) => {
   // 🧹 Clear Entire Cart
   const clearCart = () => {
     setCart([]);
+    toast.error("Cart cleared!");
   };
 
-  // 📊 Total Item Count calculation
-  const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
+  // 📊 Calculated values
+  const totalItems = isMounted
+    ? cart.reduce((total, item) => total + (item.quantity || 0), 0)
+    : 0;
 
-  // 💰 Total Price calculation (Fixed decimal precision)
-  const totalPrice = Number(
-    cart.reduce((total, item) => total + (Number(item.price) || 0) * item.quantity, 0).toFixed(2)
-  );
+  const totalPrice = isMounted
+    ? Number(
+        cart
+          .reduce(
+            (total, item) =>
+              total + (Number(item.price) || 0) * (item.quantity || 1),
+            0
+          )
+          .toFixed(2)
+      )
+    : 0;
 
   return (
     <CartContext.Provider
       value={{
-        cart,
+        cart: isMounted ? cart : [],
         addToCart,
         removeFromCart,
         updateQuantity,
         clearCart,
         totalItems,
         totalPrice,
+        isMounted,
       }}
     >
       {children}

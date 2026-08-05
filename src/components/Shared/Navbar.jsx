@@ -4,7 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import logo from "@/assets/logo.png";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react"; // 👈 1. useEffect ইম্পোর্ট করা হলো
+import { useState } from "react";
 import { useCart } from "@/context/CartContext";
 import {
   Button,
@@ -18,9 +18,8 @@ import { LogOut, User as UserIcon, LayoutGrid, Menu, X, ShoppingBag } from "luci
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [mounted, setMounted] = useState(false); // 👈 2. mounted স্টেট ডিক্লেয়ার করা হলো
   const pathname = usePathname();
-  const { totalItems } = useCart();
+  const { totalItems, isMounted } = useCart(); // 👈 Context থেকেই isMounted নেওয়া হলো
 
   const session = null;
 
@@ -29,11 +28,6 @@ export default function Navbar() {
     { name: "All Tiles", href: "/all-tiles" },
     { name: "My Profile", href: "/my-profile" },
   ];
-
-  // 💡 Hydration & Real-time Update নিশ্চিত করার জন্য
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   return (
     <nav className="sticky mx-auto top-0 z-50 bg-background/80 backdrop-blur-md border-b border-default-100">
@@ -50,7 +44,7 @@ export default function Navbar() {
           </button>
 
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="relative w-22 h-22 flex items-center justify-center transition-transform group-hover:scale-105">
+            <div className="relative w-12 h-12 flex items-center justify-center transition-transform group-hover:scale-105">
               <Image
                 src={logo}
                 alt="Tile & Crown Logo"
@@ -74,7 +68,7 @@ export default function Navbar() {
               <Link
                 key={item.href}
                 href={item.href}
-                className={`text-xl font-medium transition-colors ${
+                className={`text-lg font-medium transition-colors ${
                   isActive ? "text-primary font-semibold" : "text-default-600 hover:text-primary"
                 }`}
               >
@@ -94,8 +88,8 @@ export default function Navbar() {
           >
             <ShoppingBag className="w-6 h-6" />
             
-            {/* 👈 3. mounted এবং totalItems চেক করে ব্যাজ রেন্ডার করা হলো */}
-            {mounted && totalItems > 0 && (
+            {/* Context-এর isMounted এবং totalItems ব্যবহার করে নিরাপদে রেন্ডার */}
+            {isMounted && totalItems > 0 && (
               <span className="absolute -top-1 -right-1 bg-primary text-white text-[11px] w-5 h-5 rounded-full flex items-center justify-center font-bold shadow-md transition-all scale-100">
                 {totalItems}
               </span>
@@ -155,7 +149,7 @@ export default function Navbar() {
                 radius="full"
                 variant="shadow"
                 size="md"
-                className="text-xl font-semibold px-6"
+                className="text-base font-semibold px-6"
               >
                 Login
               </Button>

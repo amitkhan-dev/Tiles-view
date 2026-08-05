@@ -5,31 +5,36 @@ import Link from "next/link";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { 
-  ArrowLeft, CheckCircle2,XCircle, ShoppingCart, ShieldCheck,Truck, 
-  RotateCcw,Plus,Minus,Eye } from "lucide-react";
+  ArrowLeft, CheckCircle2, XCircle, ShoppingCart, ShieldCheck, Truck, 
+  RotateCcw, Plus, Minus, Eye 
+} from "lucide-react";
 import { Button } from "@heroui/react";
 import tilesData from "@/data/tiles.json";
+import { useCart } from "@/context/CartContext"; // 👈 1. useCart Context ইম্পোর্ট করা হলো
 
 export default function SingleProductPage() {
   const params = useParams();
   const tileId = params?.id;
 
+  const { addToCart } = useCart(); // 👈 2. Cart Context থেকে addToCart ফাংশন নেওয়া হলো
+
   const [quantity, setQuantity] = useState(1);
 
-  //  Find the current tile
+  // 🔍 Find the current tile (String Conversion দিয়ে টাইপ সেফ করা হলো)
   const tile = useMemo(() => {
-    return tilesData.find((item) => item.id === tileId);
+    if (!tileId) return null;
+    return tilesData.find((item) => String(item.id) === String(tileId));
   }, [tileId]);
 
-  //  Related Products
+  // 🔍 Related Products
   const relatedTiles = useMemo(() => {
     if (!tile) return [];
     return tilesData
-      .filter((item) => item.category === tile.category && item.id !== tile.id)
+      .filter((item) => item.category === tile.category && String(item.id) !== String(tile.id))
       .slice(0, 4);
   }, [tile]);
 
-  //  product not found
+  // ⚠️ Product Not Found View
   if (!tile) {
     return (
       <div className="min-h-[70vh] flex flex-col items-center justify-center text-center px-4 space-y-4">
@@ -56,6 +61,13 @@ export default function SingleProductPage() {
   const incrementQty = () => setQuantity((prev) => prev + 1);
   const decrementQty = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
 
+  // 🛒 Handle Add To Cart Event
+  const handleAddToCart = () => {
+    if (tile && tile.inStock) {
+      addToCart(tile, quantity); // 👈 কাস্টম Quantity সহ কার্টে পাঠানো হচ্ছে
+    }
+  };
+
   return (
     <div className="min-h-screen bg-neutral-50/50 py-10 sm:py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
@@ -78,7 +90,7 @@ export default function SingleProductPage() {
             <div className="relative h-[350px] sm:h-[480px] w-full rounded-2xl overflow-hidden bg-neutral-100 border border-neutral-200">
               <Image
                 src={tile.image}
-                alt={tile.title}
+                alt={tile.title || tile.name || "Tile Image"}
                 fill
                 priority
                 sizes="(max-width: 1024px) 100vw, 50vw"
@@ -100,12 +112,12 @@ export default function SingleProductPage() {
             </div>
           </div>
 
-          {/* Right: Product  */}
+          {/* Right: Product Specs & Action */}
           <div className="flex flex-col justify-between space-y-6">
             <div className="space-y-4">
               <div className="flex items-center justify-between gap-2">
                 <span className="text-xs font-bold uppercase tracking-widest text-amber-600 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
-                  {tile.category.replace("-", " ")}
+                  {tile.category?.replace("-", " ")}
                 </span>
                 <span className="text-xs font-semibold text-neutral-400">
                   ID: {tile.id}
@@ -113,15 +125,14 @@ export default function SingleProductPage() {
               </div>
 
               <h1 className="text-2xl sm:text-4xl font-black text-neutral-900 tracking-tight">
-                {tile.title}
+                {tile.title || tile.name}
               </h1>
 
-          
               <div className="flex items-baseline gap-2 pt-2">
                 <span className="text-3xl sm:text-4xl font-black text-green-800">
-                  ${tile.price.toFixed(2)}
+                  ${Number(tile.price).toFixed(2)}
                 </span>
-                <span className="text-xs text-neutral-400 font-medium">/ sq.ft ({tile.currency})</span>
+                <span className="text-xs text-neutral-400 font-medium">/ sq.ft ({tile.currency || "USD"})</span>
               </div>
 
               <p className="text-neutral-600 text-sm leading-relaxed pt-2">
@@ -149,6 +160,7 @@ export default function SingleProductPage() {
             <div className="space-y-4 pt-6 border-t border-neutral-100">
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
                 
+                {/* Plus Minus Quantity Controls */}
                 <div className="flex items-center justify-between border border-neutral-200 rounded-full p-1.5 bg-neutral-50 w-full sm:w-36">
                   <button
                     onClick={decrementQty}
@@ -167,11 +179,12 @@ export default function SingleProductPage() {
                   </button>
                 </div>
 
-                {/* Add to Cart Button */}
+                {/* Add to Cart Button (Fixed with onClick) */}
                 <Button
                   size="lg"
                   radius="full"
-                  disabled={!tile.inStock}
+                  isDisabled={!tile.inStock}
+                  onClick={handleAddToCart} // 👈 3. এখানে onClick হ্যান্ডলার যুক্ত করা হলো
                   startContent={<ShoppingCart className="w-5 h-5" />}
                   className={`flex-1 font-bold transition-all cursor-pointer ${
                     tile.inStock
@@ -233,7 +246,7 @@ export default function SingleProductPage() {
                     <div className="relative h-48 w-full overflow-hidden bg-neutral-100">
                       <Image
                         src={item.image}
-                        alt={item.title}
+                        alt={item.title || item.name}
                         fill
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                         className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -244,14 +257,14 @@ export default function SingleProductPage() {
                         {item.material}
                       </span>
                       <h4 className="text-sm font-bold text-neutral-900 line-clamp-1 group-hover:text-green-800 transition-colors">
-                        {item.title}
+                        {item.title || item.name}
                       </h4>
                     </div>
                   </div>
 
                   <div className="p-4 pt-0 flex items-center justify-between border-t border-neutral-100 mt-3">
                     <span className="text-base font-black text-neutral-900">
-                      ${item.price.toFixed(2)}
+                      ${Number(item.price).toFixed(2)}
                     </span>
                     <Link href={`/all-tiles/${item.id}`}>
                       <Button

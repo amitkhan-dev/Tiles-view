@@ -19,7 +19,10 @@ import { LogOut, User as UserIcon, LayoutGrid, Menu, X, ShoppingBag } from "luci
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const pathname = usePathname();
-  const { totalItems, isMounted } = useCart(); // 👈 Context থেকেই isMounted নেওয়া হলো
+  const {cart, totalItems, isMounted } = useCart();
+console.log("Navbar Cart:", cart);
+console.log("Navbar Total:", totalItems);
+console.log("Mounted:", isMounted);
 
   const session = null;
 
@@ -80,17 +83,16 @@ export default function Navbar() {
 
         {/* Right side - Profile, Cart & Login */}
         <div className="flex items-center gap-3">
-          {/* 🛒 Shopping Cart Icon */}
-          <Link
-            href="/cart"
+          {/* Shopping Cart Icon */}
+          <Link href="/cart"
             aria-label="View Shopping Cart"
-            className="p-2 text-default-700 hover:text-primary transition-colors relative"
-          >
+            className="relative inline-flex items-center justify-center w-10 h-10 text-default-700 hover:text-primary"
+>         
             <ShoppingBag className="w-6 h-6" />
-            
-            {/* Context-এর isMounted এবং totalItems ব্যবহার করে নিরাপদে রেন্ডার */}
-            {isMounted && totalItems > 0 && (
-              <span className="absolute -top-1 -right-1 bg-primary text-white text-[11px] w-5 h-5 rounded-full flex items-center justify-center font-bold shadow-md transition-all scale-100">
+
+            {totalItems > 0 && (
+              <span
+                className="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center z-50">
                 {totalItems}
               </span>
             )}

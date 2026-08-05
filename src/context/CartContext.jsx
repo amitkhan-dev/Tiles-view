@@ -22,7 +22,6 @@ export const CartProvider = ({ children }) => {
     }
   }, []);
 
-  // ২. কার্ট চেঞ্জ হলে localStorage এ সিঙ্ক করা
   useEffect(() => {
     if (isMounted) {
       try {
@@ -33,7 +32,8 @@ export const CartProvider = ({ children }) => {
     }
   }, [cart, isMounted]);
 
-  // 🛒 Add to Cart
+
+
   const addToCart = (product, quantity = 1) => {
     const productName = product.title || product.name || "Item";
 

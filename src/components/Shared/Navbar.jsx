@@ -3,28 +3,41 @@
 import Link from "next/link";
 import Image from "next/image";
 import logo from "@/assets/logo.png";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
-import {
-  Button,
-  Dropdown,
-  DropdownTrigger,
-  DropdownMenu,
-  DropdownItem,
-  Avatar,
-} from "@heroui/react";
+import userAvatar from "@/assets/user.png";
+import { authClient } from "@/lib/auth-client";
 import { LogOut, User as UserIcon, LayoutGrid, Menu, X, ShoppingBag } from "lucide-react";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const pathname = usePathname();
-  const { cart, totalItems, isMounted } = useCart();
-  console.log("Navbar Cart:", cart);
-  console.log("Navbar Total:", totalItems);
-  console.log("Mounted:", isMounted);
+  const [isMounted, setIsMounted] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
-  const session = null;
+  const pathname = usePathname();
+  const router = useRouter();
+  const { totalItems } = useCart();
+
+  const { data: session, isPending } = authClient.useSession();
+  
+  const user = session?.user;
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Log Out Handler
+  const handleLogout = async () => {
+    try {
+      await authClient.signOut();
+      setIsProfileOpen(false);
+      router.push("/login");
+      router.refresh();
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
 
   const menuItems = [
     { name: "Home", href: "/" },
@@ -32,8 +45,10 @@ export default function Navbar() {
     { name: "My Profile", href: "/my-profile" },
   ];
 
+  if (!isMounted) return null;
+
   return (
-    <nav className="sticky container mx-auto top-0 z-50 bg-white/90 backdrop-blur-md border rounded-xl border-slate-200">
+    <nav className="sticky container mx-auto top-0 z-50 bg-green-100 backdrop-blur-md border rounded-xl border-slate-200 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         
         {/* Left side Mobile Menu & Logo */}
@@ -57,14 +72,13 @@ export default function Navbar() {
                 priority
               />
             </div>
-            <div className="font-extrabold text-2xl tracking-tight text-[#096428]">
-              
-              <span className="text-[#482d08]">Clay</span>  & <span className="text-[#b3a505]">Crown</span>
+            <div className="font-extrabold text-sm lg:text-2xl tracking-tight text-[#096428]">
+              <span className="text-[#482d08]">Clay</span> & <span className="text-[#b3a505]">Crown</span>
             </div>
           </Link>
         </div>
 
-        {/* Center - Pill Styled Navigation Links */}
+        {/* Center - Navigation Links */}
         <div className="hidden sm:flex items-center gap-3">
           {menuItems.map((item) => {
             const isActive = pathname === item.href;
@@ -84,8 +98,9 @@ export default function Navbar() {
           })}
         </div>
 
-        {/* Right side - Profile, Cart & Login */}
+        {/* Right side - Cart & Profile/Login */}
         <div className="flex items-center gap-4">
+          
           {/* Shopping Cart Icon */}
           <Link
             href="/cart"
@@ -93,7 +108,6 @@ export default function Navbar() {
             className="relative inline-flex items-center justify-center w-10 h-10 text-slate-700 hover:text-[#0a8f1c] transition-colors"
           >
             <ShoppingBag className="w-6 h-6" />
-
             {totalItems > 0 && (
               <span className="absolute -top-1 -right-1 min-w-5 h-5 px-1 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center z-50">
                 {totalItems}
@@ -101,71 +115,74 @@ export default function Navbar() {
             )}
           </Link>
 
-          {session ? (
-            <Dropdown placement="bottom-end">
-              <DropdownTrigger>
-                <Avatar
-                  isBordered
-                  as="button"
-                  className="transition-transform"
-                  color="primary"
-                  name={session.user?.name || "User"}
-                  size="md"
-                  src={
-                    session.user?.image ||
-                    `https://api.dicebear.com/7.x/initials/svg?seed=${session.user?.name || "User"}`
-                  }
-                />
-              </DropdownTrigger>
-              <DropdownMenu aria-label="Profile Actions" variant="flat">
-                <DropdownItem key="profile_header" className="h-14 gap-2">
-                  <p className="font-semibold">Logged in as</p>
-                  <p className="font-semibold text-[#0a8f1c]">{session.user?.email}</p>
-                </DropdownItem>
-                <DropdownItem key="my_profile" startContent={<UserIcon className="w-4 h-4" />}>
-                  <Link href="/my-profile" className="w-full block">My Profile</Link>
-                </DropdownItem>
-                <DropdownItem key="all_tiles" startContent={<LayoutGrid className="w-4 h-4" />}>
-                  <Link href="/all-tiles" className="w-full block">All Tiles</Link>
-                </DropdownItem>
-                <DropdownItem key="logout" color="danger" startContent={<LogOut className="w-4 h-4 text-xl" />}>
-                  Log Out
-                </DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
+          {/* Conditional Rendering Login */}
+          {user ? (
+            <div className="flex items-center gap-3">
+              <div className="relative">
+                <button
+                  onClick={() => setIsProfileOpen(!isProfileOpen)}
+                  className="w-10 h-10 rounded-xl border border-slate-200 overflow-hidden focus:outline-none flex items-center justify-center bg-slate-50 hover:bg-slate-100 transition-colors"
+                >
+                  {user.image ? (
+                    <Image
+                      src={user.image}
+                      alt={user.name || "User"}
+                      fill
+                      sizes="40px"
+                      className="object-cover rounded-full"
+                      unoptimized
+                    />
+                  ) : (
+                    <UserIcon className="w-5 h-5 text-slate-600" />
+                  )}
+                </button>
+
+                {/* Profile Dropdown Menu */}
+                {isProfileOpen && (
+                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-slate-200 py-2 z-50 text-slate-700">
+                    <div className="px-4 py-2 border-b border-slate-100">
+                      <p className="text-xs text-slate-400 font-medium">Hello,</p>
+                      <p className="text-sm font-semibold text-[#0a8f1c] truncate">
+                        {user.name || user.email?.split("@")[0] || "User"}
+                      </p>
+                    </div>
+
+                  </div>
+                )}
+              </div>
+
+              <button
+                onClick={handleLogout}
+                className="bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 font-semibold text-sm px-5 py-2.5 rounded-xl shadow-sm transition-colors flex items-center gap-2"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="hidden sm:inline">Logout</span>
+              </button>
+            </div>
           ) : (
             <div className="flex items-center gap-3">
-              <Link href="/my-profile">
-                <Button
-                  isIconOnly
-                  variant="flat"
-                  color="default"
-                  radius="lg"
-                  size="md"
-                  className="text-slate-600 hover:text-[#006680]"
-                >
-                  <UserIcon className="w-5 h-5" />
-                </Button>
-            </Link>
-
-              {/* Login Button*/}
+              {/* Default User Icon Link */}
               <Link href="/login">
-                <Button
-                  radius="lg"
-                  size="md"
-                  className="bg-[#0a8f1c] hover:bg-[#148523] text-white font-semibold text-sm px-6 rounded-xl shadow-sm"
-                >
+                <div className="p-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors">
+                  <UserIcon className="w-5 h-5" />
+                </div>
+              </Link>
+
+              {/* Login Button */}
+              <Link href="/login">
+                <button className="bg-[#0a8f1c] hover:bg-[#148523] text-white font-semibold text-sm px-6 py-2.5 rounded-xl shadow-sm transition-colors">
                   Login
-                </Button>
+                </button>
               </Link>
             </div>
           )}
+
         </div>
       </div>
 
-      {/* Mobile Menu Drawer */}
+      {/* Mobile Drawer */}
       {isMenuOpen && (
-        <div className="sm:hidden border-t border-slate-200 bg-white px-4 py-4 space-y-2">
+        <div className="sm:hidden border-t border-slate-200 bg-white px-4 py-4 space-y-2 rounded-b-xl">
           {menuItems.map((item) => (
             <Link
               key={item.href}

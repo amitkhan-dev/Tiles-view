@@ -1,35 +1,51 @@
 "use client";
 
 import React, { useState } from "react";
+import { useForm } from "react-hook-form";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function RegistrationPage() {
   const router = useRouter();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [image, setImage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isShowPassword, setIsShowPassword] = useState(false);
+
+  // react-hook-form setup
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
 
   // Email & Password Signup
-  const handleSignUp = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  const handleSignUp = async (data) => {
+    console.log(data, "form data");
+    const { email, name, photo, password } = data;
 
+    setLoading(true);
     try {
-      await authClient.signUp.email({
-        email,
-        password,
-        name,
-        image: image || undefined,
+      const { data: res, error } = await authClient.signUp.email({
+        name: name,
+        email: email,
+        password: password,
+        image: photo,
         callbackURL: "/",
       });
-      alert("Account created successfully!");
-      router.push("/");
-    } catch (error) {
-      console.error("Signup failed:", error);
+
+      if (error) {
+        alert(error.message || "Registration failed!");
+      }
+
+      if (res) {
+        alert("Account created successfully!");
+        reset();
+        router.push("/");
+      }
+    } catch (err) {
+      console.error("Signup failed:", err);
       alert("Registration failed! Please try again.");
     } finally {
       setLoading(false);
@@ -75,7 +91,7 @@ export default function RegistrationPage() {
         </div>
 
         {/* Signup Form */}
-        <form onSubmit={handleSignUp} className="space-y-4">
+        <form onSubmit={handleSubmit(handleSignUp)} className="space-y-4">
           
           {/* Full Name Input */}
           <div className="space-y-1">
@@ -84,12 +100,15 @@ export default function RegistrationPage() {
             </label>
             <input
               type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
+              {...register("name", {
+                required: "Full name is required",
+              })}
               placeholder="Enter your full name"
-              required
               className="w-full px-4 py-2.5 rounded-md bg-white text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all"
             />
+            {errors.name && (
+              <p className="text-red-400 text-xs mt-1">{errors.name.message}</p>
+            )}
           </div>
 
           {/* Email Address Input */}
@@ -99,12 +118,19 @@ export default function RegistrationPage() {
             </label>
             <input
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              {...register("email", {
+                required: "Email is required",
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: "Invalid email address",
+                },
+              })}
               placeholder="Enter your email"
-              required
               className="w-full px-4 py-2.5 rounded-md bg-white text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all"
             />
+            {errors.email && (
+              <p className="text-red-400 text-xs mt-1">{errors.email.message}</p>
+            )}
           </div>
 
           {/* Password Input */}
@@ -112,14 +138,29 @@ export default function RegistrationPage() {
             <label className="block text-sm font-semibold text-gray-100">
               Password
             </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Create a password"
-              required
-              className="w-full px-4 py-2.5 rounded-md bg-white text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all"
-            />
+            <div className="relative">
+              <input
+                type={isShowPassword ? "text" : "password"}
+                {...register("password", {
+                  required: "Password is required",
+                  minLength: {
+                    value: 6,
+                    message: "Password must be at least 6 characters",
+                  },
+                })}
+                placeholder="Create a password"
+                className="w-full px-4 py-2.5 pr-10 rounded-md bg-white text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all"
+              />
+              <span
+                className="absolute right-3 top-3 cursor-pointer text-gray-600 hover:text-gray-900"
+                onClick={() => setIsShowPassword(!isShowPassword)}
+              >
+                {isShowPassword ? <FaEye /> : <FaEyeSlash />}
+              </span>
+            </div>
+            {errors.password && (
+              <p className="text-red-400 text-xs mt-1">{errors.password.message}</p>
+            )}
           </div>
 
           {/* Image URL Input */}
@@ -129,8 +170,7 @@ export default function RegistrationPage() {
             </label>
             <input
               type="url"
-              value={image}
-              onChange={(e) => setImage(e.target.value)}
+              {...register("photo")}
               placeholder="https://example.com/photo.jpg"
               className="w-full px-4 py-2.5 rounded-md bg-white text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all"
             />
@@ -142,7 +182,7 @@ export default function RegistrationPage() {
             disabled={loading}
             className="w-full mt-4 py-2.5 px-4 bg-[#0e6ba8] hover:bg-[#0a5280] text-white font-medium rounded-md text-sm transition-colors flex items-center justify-center gap-2 shadow-md disabled:opacity-50"
           >
-            {loading ? "Creating Account..." : "Sign Up"}
+            {loading ? "Creating Account..." : "Registration"}
             {!loading && (
               <svg
                 xmlns="http://www.w3.org/2000/svg"

@@ -3,29 +3,45 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
 import { authClient } from "@/lib/auth-client";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isShowPassword, setIsShowPassword] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
   // Email & Password Login
-  const handleEmailLogin = async (e) => {
-    e.preventDefault();
+  const handleEmailLogin = async (data) => {
+    const { email, password } = data;
     setLoading(true);
 
     try {
-      await authClient.signIn.email({
+      const { data: res, error } = await authClient.signIn.email({
         email,
         password,
+        rememberMe: true,
         callbackURL: "/",
       });
-      router.push("/");
+
+      if (error) {
+        alert(error.message || "Login failed! Please check your credentials.");
+      }
+
+      if (res) {
+        alert("Signin successful");
+        router.push("/");
+      }
     } catch (error) {
       console.error("Login failed:", error);
-      alert("Login failed! Please check your credentials.");
+      alert("Something went wrong! Please try again.");
     } finally {
       setLoading(false);
     }
@@ -47,11 +63,10 @@ export default function LoginPage() {
     <div
       className="min-h-screen w-full flex items-center justify-center bg-cover bg-center bg-no-repeat relative p-4"
       style={{
-        // ব্যাকগ্রাউন্ডে টাইলস শো-রুমের হাই-কোয়ালিটি ইমেজ
         backgroundImage: `url('https://images.unsplash.com/photo-1615873968403-89e068629265?q=80&w=1920&auto=format&fit=crop')`,
       }}
     >
-      {/* ব্যাকগ্রাউন্ড ডার্ক ওভারলে (ছবি স্পষ্ট রাখার জন্য) */}
+      {/* Overlay */}
       <div className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"></div>
 
       {/* Glassmorphism Login Card */}
@@ -71,7 +86,7 @@ export default function LoginPage() {
         </div>
 
         {/* Login Form */}
-        <form onSubmit={handleEmailLogin} className="space-y-5">
+        <form onSubmit={handleSubmit(handleEmailLogin)} className="space-y-5">
           
           {/* Email Input */}
           <div className="space-y-1.5">
@@ -80,12 +95,19 @@ export default function LoginPage() {
             </label>
             <input
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              {...register("email", {
+                required: "Email field is required",
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: "Invalid email address",
+                },
+              })}
               placeholder="Enter your email"
-              required
               className="w-full px-4 py-2.5 rounded-md bg-white text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all"
             />
+            {errors.email && (
+              <p className="text-red-400 text-xs mt-1">{errors.email.message}</p>
+            )}
           </div>
 
           {/* Password Input */}
@@ -93,14 +115,25 @@ export default function LoginPage() {
             <label className="block text-sm font-semibold text-gray-100">
               Password
             </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="Enter your password"
-              required
-              className="w-full px-4 py-2.5 rounded-md bg-white text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all"
-            />
+            <div className="relative">
+              <input
+                type={isShowPassword ? "text" : "password"}
+                {...register("password", {
+                  required: "Password field is required",
+                })}
+                placeholder="Enter your password"
+                className="w-full px-4 py-2.5 pr-10 rounded-md bg-white text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 transition-all"
+              />
+              <span
+                className="absolute right-3 top-3 cursor-pointer text-gray-600 hover:text-gray-900"
+                onClick={() => setIsShowPassword(!isShowPassword)}
+              >
+                {isShowPassword ? <FaEye /> : <FaEyeSlash />}
+              </span>
+            </div>
+            {errors.password && (
+              <p className="text-red-400 text-xs mt-1">{errors.password.message}</p>
+            )}
           </div>
 
           {/* Login Button */}
@@ -168,7 +201,7 @@ export default function LoginPage() {
             href="/register"
             className="text-cyan-400 font-semibold hover:underline ml-1"
           >
-            SignUp
+            Registration
           </Link>
         </p>
 

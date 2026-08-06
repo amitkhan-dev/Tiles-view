@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
 import { Avatar, Card, Button, Spinner } from "@heroui/react";
+import Image from "next/image";
 
 export default function MyProfilePage() {
   const { data: session, isPending } = authClient.useSession();
@@ -30,11 +31,13 @@ export default function MyProfilePage() {
   return (
     <div className="max-w-2xl mx-auto my-12 px-4">
       <Card className="p-8 bg-white border border-neutral-200 rounded-3xl shadow-sm text-center">
-        <Avatar
+        <Image
           src={user.image}
-          name={user.name}
-          className="w-28 h-28 text-2xl mx-auto mb-4 border-2 border-primary shadow-sm"
-        />
+          alt={user.name}
+          width={120}
+          height={120}
+          className="rounded-3xl mx-auto border-2 border-primary shadow-sm  object-cover"
+          />
         <h1 className="text-2xl font-bold text-neutral-900">{user.name}</h1>
         <p className="text-neutral-500 mb-6 text-sm">{user.email}</p>
 

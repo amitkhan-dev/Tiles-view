@@ -25,11 +25,12 @@ export default function LoginPage() {
 
     try {
       const { data: res, error } = await authClient.signIn.email({
-        email,
-        password,
+        email:data.email,
+        password:data.password,
         rememberMe: true,
         callbackURL: "/",
       });
+      console.log(res,error);
 
       if (error) {
         alert(error.message || "Login failed! Please check your credentials.");

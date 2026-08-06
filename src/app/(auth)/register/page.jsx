@@ -35,6 +35,8 @@ export default function RegistrationPage() {
         callbackURL: "/",
       });
 
+      console.log(res,error);
+
       if (error) {
         alert(error.message || "Registration failed!");
       }

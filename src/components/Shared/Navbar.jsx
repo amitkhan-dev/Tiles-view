@@ -20,8 +20,8 @@ export default function Navbar() {
   const { totalItems } = useCart();
 
   const { data: session, isPending } = authClient.useSession();
-  
   const user = session?.user;
+  console.log(session,"session");
 
   useEffect(() => {
     setIsMounted(true);
@@ -32,7 +32,7 @@ export default function Navbar() {
     try {
       await authClient.signOut();
       setIsProfileOpen(false);
-      router.push("/login");
+      router.push("/");
       router.refresh();
     } catch (error) {
       console.error("Logout error:", error);
@@ -100,8 +100,6 @@ export default function Navbar() {
 
         {/* Right side - Cart & Profile/Login */}
         <div className="flex items-center gap-4">
-          
-          {/* Shopping Cart Icon */}
           <Link
             href="/cart"
             aria-label="View Shopping Cart"
@@ -118,17 +116,20 @@ export default function Navbar() {
           {/* Conditional Rendering Login */}
           {user ? (
             <div className="flex items-center gap-3">
+              <h2 className="hidden md:block text-sm">Hello, {user.name}</h2>
               <div className="relative">
+                
                 <button
                   onClick={() => setIsProfileOpen(!isProfileOpen)}
                   className="w-10 h-10 rounded-xl border border-slate-200 overflow-hidden focus:outline-none flex items-center justify-center bg-slate-50 hover:bg-slate-100 transition-colors"
                 >
+                  
                   {user.image ? (
                     <Image
                       src={user.image}
                       alt={user.name || "User"}
-                      fill
-                      sizes="40px"
+                      width={60}
+                      height={60}
                       className="object-cover rounded-full"
                       unoptimized
                     />
@@ -136,19 +137,7 @@ export default function Navbar() {
                     <UserIcon className="w-5 h-5 text-slate-600" />
                   )}
                 </button>
-
-                {/* Profile Dropdown Menu */}
-                {isProfileOpen && (
-                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-slate-200 py-2 z-50 text-slate-700">
-                    <div className="px-4 py-2 border-b border-slate-100">
-                      <p className="text-xs text-slate-400 font-medium">Hello,</p>
-                      <p className="text-sm font-semibold text-[#0a8f1c] truncate">
-                        {user.name || user.email?.split("@")[0] || "User"}
-                      </p>
-                    </div>
-
-                  </div>
-                )}
+                
               </div>
 
               <button
@@ -165,6 +154,7 @@ export default function Navbar() {
               <Link href="/login">
                 <div className="p-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors">
                   <UserIcon className="w-5 h-5" />
+
                 </div>
               </Link>
 

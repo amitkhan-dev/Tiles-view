@@ -8,6 +8,19 @@ const nextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'vecteezy.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: "https",
+        hostname: "img.magnific.com",
+        port: '',
+        pathname: '/**',
+
+      },
     ],
   },
   reactCompiler: true,

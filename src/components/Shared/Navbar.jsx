@@ -76,7 +76,7 @@ export default function Navbar() {
                 priority
               />
             </div>
-            <div className="font-extrabold text-sm lg:text-2xl tracking-tight text-[#096428]">
+            <div className="font-extrabold text-sm md:text-xl lg:text-2xl tracking-tight text-[#096428]">
               <span className="text-[#482d08]">Clay</span> & <span className="text-[#b3a505]">Crown</span>
             </div>
           </Link>

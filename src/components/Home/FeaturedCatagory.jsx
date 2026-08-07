@@ -49,7 +49,6 @@ const FeaturedCatagory = () => {
     <section className="py-12 sm:py-16 bg-neutral-50/50 border-b border-neutral-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         
-        {/* Section Header */}
         <div>
           <span className="text-xs sm:text-sm font-semibold tracking-wider text-green-800 uppercase">
             Explore Collections
@@ -76,8 +75,8 @@ const FeaturedCatagory = () => {
                 className="object-cover group-hover:scale-110 transition-transform duration-500"
               />
 
-              {/* Gradient Overlay */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-transparent" />
+              
+              <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/30 to-transparent" />
 
               {/* Content Box */}
               <div className="relative z-10 space-y-1">
@@ -96,7 +95,6 @@ const FeaturedCatagory = () => {
           ))}
         </div>
 
-        {/* Bottom Right Explore Collection Button */}
         <div className="flex justify-end pt-4">
           <Link href="/all-tiles">
             <Button

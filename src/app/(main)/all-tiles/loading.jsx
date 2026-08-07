@@ -15,7 +15,7 @@ export default function Loading() {
           <Skeleton className="h-4 w-3/4 mx-auto rounded-lg" />
         </div>
 
-        {/* Search & Filter Bar Skeleton */}
+        {/* Search & Filter Bar */}
         <div className="bg-white border border-neutral-200 rounded-2xl p-6 shadow-sm space-y-4">
           <Skeleton className="h-10 w-full lg:w-96 rounded-xl" />
           <div className="flex gap-2 overflow-hidden pt-2">
@@ -25,7 +25,7 @@ export default function Loading() {
           </div>
         </div>
 
-        {/* Product Grid Skeleton */}
+        {/* Product Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {[...Array(8)].map((_, i) => (
             <Card key={i} className="p-4 space-y-4 rounded-2xl border border-neutral-200 shadow-sm" radius="lg">

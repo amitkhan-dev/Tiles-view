@@ -38,7 +38,7 @@ export default function RegistrationPage() {
 
       console.log(res,error);
 
-       if (error) {
+      if (error) {
     toast.error(error.message || "Registration failed!");
     return;
   }
@@ -96,8 +96,6 @@ export default function RegistrationPage() {
 
         {/* Signup Form */}
         <form onSubmit={handleSubmit(handleSignUp)} className="space-y-4">
-          
-          {/* Full Name Input */}
           <div className="space-y-1">
             <label className="block text-sm font-semibold text-gray-100">
               Full Name
@@ -115,7 +113,7 @@ export default function RegistrationPage() {
             )}
           </div>
 
-          {/* Email Address Input */}
+          {/* Email */}
           <div className="space-y-1">
             <label className="block text-sm font-semibold text-gray-100">
               Email Address
@@ -137,7 +135,7 @@ export default function RegistrationPage() {
             )}
           </div>
 
-          {/* Password Input */}
+          {/* Password */}
           <div className="space-y-1">
             <label className="block text-sm font-semibold text-gray-100">
               Password
@@ -167,7 +165,7 @@ export default function RegistrationPage() {
             )}
           </div>
 
-          {/* Image URL Input */}
+          {/* Image */}
           <div className="space-y-1">
             <label className="block text-sm font-semibold text-gray-100">
               Image URL <span className="text-xs font-normal text-gray-300">(Optional)</span>
@@ -180,7 +178,7 @@ export default function RegistrationPage() {
             />
           </div>
 
-          {/* Submit Button */}
+          {/* Submit Btn */}
           <button
             type="submit"
             disabled={loading}
@@ -206,12 +204,11 @@ export default function RegistrationPage() {
           </button>
         </form>
 
-        {/* Divider */}
         <div className="my-5 text-center text-xs text-gray-300 font-medium">
           OR
         </div>
 
-        {/* Google Signup Button */}
+        {/* Google Signup Btn */}
         <button
           onClick={handleGoogleSignUp}
           type="button"
@@ -238,7 +235,7 @@ export default function RegistrationPage() {
           SignUp With Google
         </button>
 
-        {/* Footer Link */}
+        {/* Footer */}
         <p className="mt-6 text-center text-xs text-gray-300">
           Already have an account?{" "}
           <Link

@@ -26,7 +26,7 @@ export default function AllTilesPage() {
   const { addToCart } = useCart();
   
 
-  //  Interactive Button Handler
+  //  Interactive Handler
   const handleAddToCart = (tile) => {
     addToCart(tile, 1);
     setAddedId(tile.id);
@@ -153,7 +153,7 @@ export default function AllTilesPage() {
                         className="object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                       
-                      {/* Stock Status Badge */}
+                      {/* Stock Status */}
                       <div className="absolute top-3 left-3">
                         {tile.inStock ? (
                           <span className="inline-flex items-center gap-1 bg-emerald-800/90 backdrop-blur-md text-white text-[10px] font-bold px-2.5 py-1 rounded-full shadow-sm">

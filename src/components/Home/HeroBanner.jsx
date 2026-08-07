@@ -1,47 +1,26 @@
+"use client"
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@heroui/react';
 import { ArrowRight, Clock, ShieldCheck, Sparkles, Truck } from 'lucide-react';
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Pagination, EffectFade } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/pagination";
+import "swiper/css/effect-fade";
+import HeroBannerSwiper from './HeroBannerSwiper';
 
 const HeroBanner = () => {
   return (
     <section className="relative container mx-auto overflow-hidden my-4 border bg-background shadow-sm">
-      <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-150 h-[300px] bg-linear-to-tr from-green-800/20 to-primary/20 blur-[120px] rounded-full  z-10 pointer-events-none" />
+      <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-150 h-75 bg-linear-to-tr from-green-500/10 to-primary/10 blur-[80px] rounded-full  z-10 pointer-events-none" />
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
           <div className="flex flex-col gap-8 lg:gap-12">
           
           {/* banner image */}
-            <div className="order-1 w-full relative rounded-2xl overflow-hidden shadow-2xl border border-default-200/80 group h-95 sm:h-120 lg:h-137 flex items-center justify-center text-center">
-            
-              <Image
-                src="https://images.unsplash.com/photo-1615873968403-89e068629265?q=80&w=1600&auto=format&fit=crop"
-                alt="Modern Luxury Tiles Showcase"
-                fill
-                priority
-                className="object-cover group-hover:scale-105 transition-transform duration-700"
-                />
-  
-                <div className="absolute inset-0 bg-black/40" />
-                <div className="relative z-10 max-w-3xl px-4 sm:px-6 space-y-4 sm:space-y-6">
-                  <h2 className="text-2xl sm:text-4xl lg:text-5xl font-bold tracking-wider text-white uppercase leading-tight font-sans drop-shadow-md">
-                    BOLD ROOMS CALL FOR BOLD TILES
-                  </h2>
-                
-                  <p className="text-xs sm:text-sm lg:text-base text-neutral-100 font-medium tracking-wide drop-shadow-sm">
-                    Find Just That Tile That Will Make Your Room Pop!
-                  </p>
-
-                <div className="pt-2">
-                  <Link href="/all-tiles">
-                    <button className="px-6 py-3 bg-white/90 hover:bg-white text-neutral-800 font-semibold text-xs sm:text-sm uppercase tracking-widest shadow-lg transition-all hover:scale-105 cursor-pointer rounded-sm">
-                      BROWSE TILE COLLECTIONS
-                    </button>
-                  </Link>
-                </div>
-              </div>
-            </div>
+            <HeroBannerSwiper/>
 
           {/* text  */}
           <div className="order-2 w-full space-y-6 text-center lg:text-left">

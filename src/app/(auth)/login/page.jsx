@@ -84,7 +84,7 @@ export default function LoginPage() {
             Welcome to Tiles
           </h1>
           <h2 className="text-2xl font-bold text-cyan-400 mt-1">
-            TilesNest
+            Clay&Crown
           </h2>
           <p className="text-xs text-gray-200 mt-2 font-light">
             Sign in to continue your tiles discovery journey

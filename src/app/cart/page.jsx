@@ -49,7 +49,7 @@ export default function CartPage() {
           variant="light"
           size="sm"
           onClick={clearCart}
-          className="font-bold text-xs"
+          className="font-bold text-xs border bg-red-600 text-white"
         >
           Clear Cart
         </Button>

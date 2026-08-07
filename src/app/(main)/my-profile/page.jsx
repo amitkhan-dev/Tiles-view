@@ -36,6 +36,7 @@ export default function MyProfilePage() {
           alt={user.name}
           width={120}
           height={120}
+          unoptimized
           className="rounded-3xl mx-auto border-2 border-primary shadow-sm  object-cover"
           />
         <h1 className="text-2xl font-bold text-neutral-900">{user.name}</h1>

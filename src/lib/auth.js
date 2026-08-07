@@ -5,6 +5,12 @@ import { mongodbAdapter } from "better-auth/adapters/mongodb";
 const client = new MongoClient(process.env.MONGODB_URI);
 const db = client.db("tiles-view");
 
+console.log("GOOGLE_CLIENT_ID =", process.env.GOOGLE_CLIENT_ID);
+console.log(
+  "GOOGLE_CLIENT_SECRET =",
+  process.env.GOOGLE_CLIENT_SECRET ? "FOUND" : "NOT FOUND"
+);
+
 export const auth = betterAuth({
   database: mongodbAdapter(db, {
     // Optional: if you don't provide a client, database transactions won't be enabled.

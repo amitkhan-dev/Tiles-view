@@ -9,6 +9,7 @@ import { useCart } from "@/context/CartContext";
 import userAvatar from "@/assets/user.png";
 import { authClient } from "@/lib/auth-client";
 import { LogOut, User as UserIcon, LayoutGrid, Menu, X, ShoppingBag } from "lucide-react";
+import toast from "react-hot-toast";
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -31,11 +32,14 @@ export default function Navbar() {
   const handleLogout = async () => {
     try {
       await authClient.signOut();
+      toast.success("Logged out successfully!");
+
       setIsProfileOpen(false);
       router.push("/");
       router.refresh();
     } catch (error) {
       console.error("Logout error:", error);
+      toast.error("Logout failed! Please try again.");
     }
   };
 

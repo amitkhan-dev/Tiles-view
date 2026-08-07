@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { authClient } from "@/lib/auth-client";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import toast from "react-hot-toast";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -33,20 +34,24 @@ export default function LoginPage() {
       console.log(res,error);
 
       if (error) {
-        alert(error.message || "Login failed! Please check your credentials.");
-      }
-
-      if (res) {
-        alert("Signin successful");
-        router.push("/");
-      }
-    } catch (error) {
-      console.error("Login failed:", error);
-      alert("Something went wrong! Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
+            toast.error(error.message || "Login failed! Please check your credentials.");
+            return;
+          }
+        
+          if (res) {
+            toast.success("Signin successful!");
+          
+            setTimeout(() => {
+              router.push("/");
+            }, 1000);
+          }
+          } catch (error) {
+          console.error("Login failed:", error);
+          toast.error("Something went wrong! Please try again.");
+          } finally {
+          setLoading(false);
+          }
+        };
 
   // Google Login
   const handleGoogleLogin = async () => {

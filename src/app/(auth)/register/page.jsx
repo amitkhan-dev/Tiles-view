@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import toast from "react-hot-toast";
 
 export default function RegistrationPage() {
   const router = useRouter();
@@ -32,26 +33,27 @@ export default function RegistrationPage() {
         email: email,
         password: password,
         image: photo,
-        callbackURL: "/",
+        callbackURL: "/login",
       });
 
       console.log(res,error);
 
-      if (error) {
-        alert(error.message || "Registration failed!");
-      }
+       if (error) {
+    toast.error(error.message || "Registration failed!");
+    return;
+  }
 
-      if (res) {
-        alert("Account created successfully!");
-        reset();
-        router.push("/");
-      }
-    } catch (err) {
-      console.error("Signup failed:", err);
-      alert("Registration failed! Please try again.");
-    } finally {
-      setLoading(false);
-    }
+  if (res) {
+    toast.success("Account created successfully!");
+    reset();
+    router.push("/login");
+  }
+} catch (err) {
+  console.error("Signup failed:", err);
+  toast.error("Registration failed! Please try again.");
+} finally {
+  setLoading(false);
+}
   };
 
   // Google Signup
